@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refleks Oyunu</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        #game {
+            font-size: 24px;
+            margin-top: 50px;
+        }
+        #timer {
+            width: 100%;
+            transition: width 5s linear;
+            height: 20px;
+            background-color: red;
+        }
+        .arrow {
+            width: 50px;
+            height: 50px;
+            background: url('yukarı.png') no-repeat center;
+            background-size: cover;
+            display: inline-block;
+        }
+        .up { transform: rotate(0deg); }
+        .down { transform: rotate(180deg); }
+        .left { transform: rotate(-90deg); }
+        .right { transform: rotate(90deg); }
+    </style>
+</head>
+<body>
+    <h1>Refleks Oyunu</h1>
+    <p>Bilgisayarın seçtiği yön dışında bir yön tuşuna bas!</p>
+    <div id="timer"></div>
+    <div id="game">Başlamak için bir tuşa bas!</div>
+    <div id="arrow-container"></div>
+    <script>
+        const directions = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+        let score = 0;
+        let speed = 1000;
+        let timeLimit = 5000;
+        let computerChoice = null;
+        let timer;
+        let asd;
+        
+        function newRound() {
+            computerChoice = directions[Math.floor(Math.random() * directions.length)];
+            document.getElementById("arrow-container").innerHTML = `<div class='arrow ${getArrowClass(computerChoice)}'></div>`;
+            resetTimer();
+        }
+        
+        function getArrowClass(direction) {
+            switch (direction) {
+                case 'ArrowUp': return 'up';
+                case 'ArrowDown': return 'down';
+                case 'ArrowLeft': return 'left';
+                case 'ArrowRight': return 'right';
+            }
+        }
+        
+        function resetTimer() {
+            clearTimeout(timer);
+            document.getElementById("timer").style.transition = 'none';
+            document.getElementById("timer").style.width = "100%";
+            
+            asd = setTimeout(() => {
+                document.getElementById("timer").style.transition = `${timeLimit / 1000}s linear`;
+                document.getElementById("timer").style.width = "0%";
+            }, 50);
+            
+            timer = setTimeout(() => {
+                document.body.style.backgroundColor = "red";
+                document.body.innerHTML = '<h1 style="color: purple; font-size: 100px; text-align: center;">KAYBETTİN</h1><br><br><br><button onclick="naber()">yeniden dene</button';
+            }, timeLimit);
+        }
+        
+        function gameOver(){
+
+            document.body.style.backgroundColor = "red";
+                document.body.innerHTML = '<h1 style="color: purple; font-size: 100px; text-align: center;">KAYBETTİN</h1><br><br><br><button onclick="naber()">yeniden dene</button';
+        }
+        
+        function handleKeyPress(event) {
+            if (directions.includes(event.key)) {
+                if (event.key !== computerChoice) {
+                    score++;
+                    speed = Math.max(300, speed - 50);
+                    timeLimit = Math.max(1000, timeLimit - 200);
+                    resetTimer(); 
+                    newRound();
+                } else {
+
+                    score = 0;
+                    speed = 1000;
+                    timeLimit = 5000;
+                    gameOver()
+                    document.removeEventListener("keydown",handleKeyPress);
+                }
+            }
+        }
+        function naber(){
+            document.body.style.backgroundColor = "white";
+
+            document.body.innerHTML='<h1>Refleks Oyunu</h1>'+
+        '<p>Bilgisayarın seçtiği yön dışında bir yön tuşuna bas!</p>'+
+        '<div id="timer"></div>'+
+        '<div id="game">Başlamak için bir tuşa bas!</div>'+
+        '<div id="arrow-container"></div>'
+
+            document.addEventListener("keydown", handleKeyPress);
+            newRound();
+        }
+        
+        document.addEventListener("keydown", handleKeyPress);
+        newRound();
+    </script>
+</body>
+</html>
